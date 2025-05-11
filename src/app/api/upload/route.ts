@@ -1,17 +1,29 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
 
-export async function POST(request: Request) {
-  const formData = await request.formData();
-  const file = formData.get('file') as File;
-  const type = formData.get('type') as string; // 'product', 'avatar', 'audio'
+async function handler(request: Request) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
 
-  if (!file) {
-    return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400 }
+      );
+    }
+
+    // For MVP, we'll just return a mock URL
+    // In production, you'd want to upload to a storage service
+    const mockUrl = `https://storage.example.com/${file.name}`;
+    
+    return NextResponse.json({ url: mockUrl });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to upload file' },
+      { status: 500 }
+    );
   }
+}
 
-  // TODO: Implement file upload logic (e.g., to AWS S3)
-  // TODO: Integrate with Runway API for video generation
-  // TODO: Integrate with 11labs API for audio processing
-
-  return NextResponse.json({ message: 'File uploaded successfully', type });
-} 
+export const POST = requireAuth(handler); 
