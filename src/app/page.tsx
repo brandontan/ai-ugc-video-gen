@@ -1,4 +1,5 @@
-import VideoUpload from './components/VideoUpload'
+import VideoGenerator from './components/VideoGenerator'
+// import VideoUpload from './components/VideoUpload'
 import { useAuth } from './contexts/AuthContext'
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <VideoUpload />
+          <VideoGenerator />
         </div>
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
