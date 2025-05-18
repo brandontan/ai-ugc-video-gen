@@ -19,30 +19,33 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Mock user for development
+const MOCK_USER: User = {
+  id: '1',
+  email: 'dev@example.com',
+  name: 'Developer'
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    checkAuth()
+    // Auto-login with mock user in development
+    if (process.env.NODE_ENV === 'development') {
+      setUser(MOCK_USER)
+    }
+    setLoading(false)
   }, [])
 
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/me')
-      if (response.ok) {
-        const userData = await response.json()
-        setUser(userData)
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const login = async (email: string, password: string) => {
+    // Mock login for development
+    if (process.env.NODE_ENV === 'development') {
+      setUser(MOCK_USER)
+      return
+    }
+    
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -65,32 +68,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      // Mock logout for development
+      if (process.env.NODE_ENV === 'development') {
+        setUser(null)
+        return
+      }
+      
       await fetch('/api/auth/logout', { method: 'POST' })
       setUser(null)
-      router.push('/')
+      router.push('/login')
     } catch (error) {
-      console.error('Logout error:', error)
-      throw error
+      console.error('Logout failed:', error)
     }
   }
 
   const signup = async (email: string, password: string, name: string) => {
     try {
+      // Mock signup for development
+      if (process.env.NODE_ENV === 'development') {
+        const newUser = { ...MOCK_USER, email, name }
+        setUser(newUser)
+        return
+      }
+      
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       })
-
       if (!response.ok) {
         throw new Error('Signup failed')
       }
-
       const userData = await response.json()
       setUser(userData)
-      router.push('/dashboard')
+      router.push('/')
     } catch (error) {
-      console.error('Signup error:', error)
+      console.error('Signup failed:', error)
       throw error
     }
   }

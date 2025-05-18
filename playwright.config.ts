@@ -14,8 +14,6 @@ export default defineConfig({
     // Increase timeouts
     actionTimeout: 30000,
     navigationTimeout: 30000,
-    // More lenient wait conditions
-    waitForTimeout: 5000,
   },
   projects: [
     {
